@@ -17,8 +17,7 @@ from .utils import MemEditError
 
 
 __author__ = 'Jan Petykiewicz'
-
-from .VERSION import __version__
+__version__ = '0.6'
 version = __version__       # legacy compatibility
 
 

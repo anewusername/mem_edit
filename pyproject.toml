@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mem_edit"
+description = "Multi-platform library for memory editing"
+readme = "README.md"
+license = { file = "LICENSE.md" }
+authors = [
+    { name="Jan Petykiewicz", email="jan@mpxd.net" },
+    ]
+homepage = "https://mpxd.net/code/jan/mem_edit"
+repository = "https://mpxd.net/code/jan/mem_edit"
+keywords = [
+    "memory",
+    "edit",
+    "editing",
+    "ReadProcessMemory",
+    "WriteProcessMemory",
+    "proc",
+    "mem",
+    "ptrace",
+    "multiplatform",
+    "scan",
+    "scanner",
+    "search",
+    "debug",
+    "cheat",
+    "trainer",
+    ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
+    "Environment :: Other Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Debuggers",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System",
+    "Topic :: Games/Entertainment",
+    "Topic :: Utilities",
+    ]
+requires-python = ">=3.7"
+dynamic = ["version"]
+dependencies = [
+    ]
+
+[tool.hatch.version]
+path = "mem_edit/__init__.py"
+

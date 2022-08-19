@@ -1,8 +1,13 @@
 .idea/
 
-__pycache__
+__pycache__/
 *.pyc
 
 *.egg-info/
 build/
 dist/
+
+.pytest_cache/
+.mypy_cache/
+
+*.pickle
