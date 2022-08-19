@@ -58,7 +58,9 @@ class Process(AbstractProcess):
 
     def close(self):
         os.kill(self.pid, signal.SIGSTOP)
+        os.waitpid(self.pid, 0)
         ptrace(ptrace_commands['PTRACE_DETACH'], self.pid, 0, 0)
+        os.kill(self.pid, signal.SIGCONT)
         self.pid = None
 
     def write_memory(self, base_address: int, write_buffer: ctypes_buffer_t):
