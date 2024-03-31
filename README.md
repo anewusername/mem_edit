@@ -1,8 +1,10 @@
-# mem_edit 
+# mem_edit
 
 **mem_edit** is a multi-platform memory editing library written in Python.
 
 **Homepage:** https://mpxd.net/code/jan/mem_edit
+* PyPI: https://pypi.org/project/mem-edit/
+* Github mirror: https://github.com/anewusername/mem_edit
 
 **Capabilities:**
 * Scan all readable memory used by a process.
@@ -18,7 +20,7 @@
 ## Installation
 
 **Dependencies:**
-* python 3 (written and tested with 3.7)
+* python >=3.11
 * ctypes
 * typing (for type annotations)
 
