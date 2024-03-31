@@ -233,6 +233,8 @@ class Process(AbstractProcess):
                 logger.debug(f'Checking name for pid {pid}')
                 with Process.open_process(pid) as process:
                     path = process.get_path()
+                if path is None:
+                    continue
 
                 name = os.path.basename(path)
                 logger.debug(f'Name was "{name}"')

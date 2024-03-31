@@ -61,6 +61,8 @@ class Process(AbstractProcess):
         self.pid = process_id
 
     def close(self) -> None:
+        if self.pid is None:
+            return
         os.kill(self.pid, signal.SIGSTOP)
         os.waitpid(self.pid, 0)
         ptrace(ptrace_commands['PTRACE_DETACH'], self.pid, 0, 0)
