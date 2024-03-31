@@ -2,7 +2,6 @@
 Implementation of Process class for Linux
 """
 
-from typing import List, Tuple, Optional
 from os import strerror
 import os
 import os.path
@@ -35,41 +34,46 @@ _ptrace.argtypes = (ctypes.c_ulong,) * 4
 _ptrace.restype = ctypes.c_long
 
 
-def ptrace(command: int, pid: int = 0, arg1: int = 0, arg2: int = 0) -> int:
+def ptrace(
+        command: int,
+        pid: int = 0,
+        arg1: int = 0,
+        arg2: int = 0,
+        ) -> int:
     """
-    Call ptrace() with the provided pid and arguments. See the ```man ptrace```.
+    Call ptrace() with the provided pid and arguments. See `man ptrace`.
     """
-    logger.debug('ptrace({}, {}, {}, {})'.format(command, pid, arg1, arg2))
+    logger.debug(f'ptrace({command}, {pid}, {arg1}, {arg2})')
     result = _ptrace(command, pid, arg1, arg2)
     if result == -1:
         err_no = ctypes.get_errno()
         if err_no:
-            raise MemEditError('ptrace({}, {}, {}, {})'.format(command, pid, arg1, arg2) +
-                               ' failed with error {}: {}'.format(err_no, strerror(err_no)))
+            raise MemEditError(f'ptrace({command}, {pid}, {arg1}, {arg2})'
+                               + f' failed with error {err_no}: {strerror(err_no)}')
     return result
 
 
 class Process(AbstractProcess):
-    pid = None
+    pid: int | None
 
-    def __init__(self, process_id: int):
+    def __init__(self, process_id: int) -> None:
         ptrace(ptrace_commands['PTRACE_SEIZE'], process_id)
         self.pid = process_id
 
-    def close(self):
+    def close(self) -> None:
         os.kill(self.pid, signal.SIGSTOP)
         os.waitpid(self.pid, 0)
         ptrace(ptrace_commands['PTRACE_DETACH'], self.pid, 0, 0)
         os.kill(self.pid, signal.SIGCONT)
         self.pid = None
 
-    def write_memory(self, base_address: int, write_buffer: ctypes_buffer_t):
-        with open('/proc/{}/mem'.format(self.pid), 'rb+') as mem:
+    def write_memory(self, base_address: int, write_buffer: ctypes_buffer_t) -> None:
+        with open(f'/proc/{self.pid}/mem', 'rb+') as mem:
             mem.seek(base_address)
             mem.write(write_buffer)
 
     def read_memory(self, base_address: int, read_buffer: ctypes_buffer_t) -> ctypes_buffer_t:
-        with open('/proc/{}/mem'.format(self.pid), 'rb+') as mem:
+        with open(f'/proc/{self.pid}/mem', 'rb+') as mem:
             mem.seek(base_address)
             mem.readinto(read_buffer)
         return read_buffer
@@ -82,7 +86,7 @@ class Process(AbstractProcess):
             return ''
 
     @staticmethod
-    def list_available_pids() -> List[int]:
+    def list_available_pids() -> list[int]:
         pids = []
         for pid_str in os.listdir('/proc'):
             try:
@@ -92,26 +96,26 @@ class Process(AbstractProcess):
         return pids
 
     @staticmethod
-    def get_pid_by_name(target_name: str) -> Optional[int]:
+    def get_pid_by_name(target_name: str) -> int | None:
         for pid in Process.list_available_pids():
             try:
-                logger.debug('Checking name for pid {}'.format(pid))
-                with open('/proc/{}/cmdline'.format(pid), 'rb') as cmdline:
+                logger.debug(f'Checking name for pid {pid}')
+                with open(f'/proc/{pid}/cmdline', 'rb') as cmdline:
                     path = cmdline.read().decode().split('\x00')[0]
             except FileNotFoundError:
                 continue
 
             name = os.path.basename(path)
-            logger.debug('Name was "{}"'.format(name))
+            logger.debug(f'Name was "{name}"')
             if path is not None and name == target_name:
                 return pid
 
-        logger.info('Found no process with name {}'.format(target_name))
+        logger.info(f'Found no process with name {target_name}')
         return None
 
-    def list_mapped_regions(self, writeable_only: bool = True) -> List[Tuple[int, int]]:
+    def list_mapped_regions(self, writeable_only: bool = True) -> list[tuple[int, int]]:
         regions = []
-        with open('/proc/{}/maps'.format(self.pid), 'r') as maps:
+        with open(f'/proc/{self.pid}/maps', 'r') as maps:
             for line in maps:
                 bounds, privileges = line.split()[0:2]
 

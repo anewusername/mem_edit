@@ -11,21 +11,26 @@ Utility functions and types:
   Check if two buffers (ctypes objects) store equal values:
     ctypes_equal(a, b)
 """
-
-from typing import List, Union
+from typing import Union
 import ctypes
 
 
-ctypes_buffer_t = Union[ctypes._SimpleCData, ctypes.Array, ctypes.Structure, ctypes.Union]
+ctypes_buffer_t = Union[
+    ctypes._SimpleCData,
+    ctypes.Array,
+    ctypes.Structure,
+    ctypes.Union,
+    ]
 
 
 class MemEditError(Exception):
     pass
 
 
-def search_buffer_verbatim(needle_buffer: ctypes_buffer_t,
-                           haystack_buffer: ctypes_buffer_t,
-                           ) -> List[int]:
+def search_buffer_verbatim(
+        needle_buffer: ctypes_buffer_t,
+        haystack_buffer: ctypes_buffer_t,
+        ) -> list[int]:
     """
     Search for a buffer inside another buffer, using a direct (bitwise) comparison
 
@@ -50,9 +55,10 @@ def search_buffer_verbatim(needle_buffer: ctypes_buffer_t,
     return found
 
 
-def search_buffer(needle_buffer: ctypes_buffer_t,
-                  haystack_buffer: ctypes_buffer_t,
-                  ) -> List[int]:
+def search_buffer(
+        needle_buffer: ctypes_buffer_t,
+        haystack_buffer: ctypes_buffer_t,
+        ) -> list[int]:
     """
     Search for a buffer inside another buffer, using `ctypes_equal` for comparison.
     Much slower than `search_buffer_verbatim`.
@@ -73,9 +79,10 @@ def search_buffer(needle_buffer: ctypes_buffer_t,
     return found
 
 
-def ctypes_equal(a: ctypes_buffer_t,
-                 b: ctypes_buffer_t,
-                 ) -> bool:
+def ctypes_equal(
+        a: ctypes_buffer_t,
+        b: ctypes_buffer_t,
+        ) -> bool:
     """
     Check if the values stored inside two ctypes buffers are equal.
     """
@@ -87,7 +94,7 @@ def ctypes_equal(a: ctypes_buffer_t,
     elif isinstance(a, ctypes.Structure) or isinstance(a, ctypes.Union):
         for attr_name, attr_type in a._fields_:
             a_attr, b_attr = (getattr(x, attr_name) for x in (a, b))
-            if isinstance(a, ctypes_buffer_t):
+            if isinstance(a, (ctypes.Array, ctypes.Structure, ctypes.Union, ctypes._SimpleCData)):
                 if not ctypes_equal(a_attr, b_attr):
                     return False
             elif not a_attr == b_attr:

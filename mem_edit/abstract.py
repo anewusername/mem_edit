@@ -2,7 +2,7 @@
 Abstract class for cross-platform memory editing.
 """
 
-from typing import List, Tuple, Optional, Union, Generator
+from typing import Generator
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 import copy
@@ -122,7 +122,7 @@ class Process(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def __init__(self, process_id: int):
+    def __init__(self, process_id: int) -> None:
         """
         Constructing a Process object prepares the process with specified process_id for
           memory editing. Finding the `process_id` for the process you want to edit is often
@@ -135,7 +135,7 @@ class Process(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def close(self):
+    def close(self) -> None:
         """
         Detach from the process, removing our ability to edit it and
           letting other debuggers attach to it instead.
@@ -147,7 +147,11 @@ class Process(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def write_memory(self, base_address: int, write_buffer: ctypes_buffer_t):
+    def write_memory(
+            self,
+            base_address: int,
+            write_buffer: ctypes_buffer_t,
+            ) -> None:
         """
         Write the given buffer to the process's address space, starting at `base_address`.
 
@@ -160,7 +164,11 @@ class Process(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def read_memory(self, base_address: int, read_buffer: ctypes_buffer_t) -> ctypes_buffer_t:
+    def read_memory(
+            self,
+            base_address: int,
+            read_buffer: ctypes_buffer_t,
+            ) -> ctypes_buffer_t:
         """
         Read into the given buffer from the process's address space, starting at `base_address`.
 
@@ -176,7 +184,7 @@ class Process(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def list_mapped_regions(self, writeable_only=True) -> List[Tuple[int, int]]:
+    def list_mapped_regions(self, writeable_only: bool = True) -> list[tuple[int, int]]:
         """
         Return a list of `(start_address, stop_address)` for the regions of the address space
           accessible to (readable and possibly writable by) the process.
@@ -192,18 +200,18 @@ class Process(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_path(self) -> str:
+    def get_path(self) -> str | None:
         """
         Return the path to the executable file which was run to start this process.
 
         Returns:
-            A string containing the path.
+            A string containing the path, or None if no path was found.
         """
         pass
 
     @staticmethod
     @abstractmethod
-    def list_available_pids() -> List[int]:
+    def list_available_pids() -> list[int]:
         """
         Return a list of all process ids (pids) accessible on this system.
 
@@ -214,7 +222,7 @@ class Process(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def get_pid_by_name(target_name: str) -> Optional[int]:
+    def get_pid_by_name(target_name: str) -> int | None:
         """
         Attempt to return the process id (pid) of a process which was run with an executable
           file with the provided name. If no process is found, return None.
@@ -234,10 +242,11 @@ class Process(metaclass=ABCMeta):
         """
         pass
 
-    def deref_struct_pointer(self,
-                             base_address: int,
-                             targets: List[Tuple[int, ctypes_buffer_t]],
-                             ) -> List[ctypes_buffer_t]:
+    def deref_struct_pointer(
+            self,
+            base_address: int,
+            targets: list[tuple[int, ctypes_buffer_t]],
+            ) -> list[ctypes_buffer_t]:
         """
         Take a pointer to a struct and read out the struct members:
         ```
@@ -263,11 +272,12 @@ class Process(metaclass=ABCMeta):
         values = [self.read_memory(base + offset, buffer) for offset, buffer in targets]
         return values
 
-    def search_addresses(self,
-                         addresses: List[int],
-                         needle_buffer: ctypes_buffer_t,
-                         verbatim: bool = True,
-                         ) -> List[int]:
+    def search_addresses(
+            self,
+            addresses: list[int],
+            needle_buffer: ctypes_buffer_t,
+            verbatim: bool = True,
+            ) -> list[int]:
         """
         Search for the provided value at each of the provided addresses, and return the addresses
           where it is found.
@@ -298,11 +308,12 @@ class Process(metaclass=ABCMeta):
                 found.append(address)
         return found
 
-    def search_all_memory(self,
-                          needle_buffer: ctypes_buffer_t,
-                          writeable_only: bool = True,
-                          verbatim: bool = True,
-                          ) -> List[int]:
+    def search_all_memory(
+            self,
+            needle_buffer: ctypes_buffer_t,
+            writeable_only: bool = True,
+            verbatim: bool = True,
+            ) -> list[int]:
         """
         Search the entire memory space accessible to the process for the provided value.
 
