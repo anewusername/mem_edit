@@ -78,12 +78,12 @@ class Process(AbstractProcess):
             mem.readinto(read_buffer)
         return read_buffer
 
-    def get_path(self) -> str:
+    def get_path(self) -> str | None:
         try:
-            with open('/proc/{}/cmdline', 'rb') as f:
-                return f.read().decode().split('\x00')[0]
+            with open(f'/proc/{self.pid}/cmdline', 'rb') as ff:
+                return ff.read().decode().split('\x00')[0]
         except FileNotFoundError:
-            return ''
+            return None
 
     @staticmethod
     def list_available_pids() -> list[int]:
