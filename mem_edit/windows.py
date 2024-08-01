@@ -4,7 +4,7 @@ Implementation of Process class for Windows
 
 from math import floor
 from os import strerror
-import os.path
+from pathlib import Path
 import ctypes
 import ctypes.wintypes
 import logging
@@ -233,7 +233,7 @@ class Process(AbstractProcess):
                 if path is None:
                     continue
 
-                name = os.path.basename(path)
+                name = Path(path).name
                 logger.debug(f'Name was "{name}"')
                 if path is not None and name == target_name:
                     return pid

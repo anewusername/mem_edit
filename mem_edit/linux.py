@@ -9,6 +9,7 @@ import signal
 import ctypes
 import ctypes.util
 import logging
+from pathlib import Path
 
 from .abstract import Process as AbstractProcess
 from .utils import ctypes_buffer_t, MemEditError
@@ -70,19 +71,19 @@ class Process(AbstractProcess):
         self.pid = None
 
     def write_memory(self, base_address: int, write_buffer: ctypes_buffer_t) -> None:
-        with open(f'/proc/{self.pid}/mem', 'rb+') as mem:
+        with Path(f'/proc/{self.pid}/mem').open('rb+') as mem:
             mem.seek(base_address)
             mem.write(write_buffer)
 
     def read_memory(self, base_address: int, read_buffer: ctypes_buffer_t) -> ctypes_buffer_t:
-        with open(f'/proc/{self.pid}/mem', 'rb+') as mem:
+        with Path(f'/proc/{self.pid}/mem').open('rb+') as mem:
             mem.seek(base_address)
             mem.readinto(read_buffer)
         return read_buffer
 
     def get_path(self) -> str | None:
         try:
-            with open(f'/proc/{self.pid}/cmdline', 'rb') as ff:
+            with Path(f'/proc/{self.pid}/cmdline').open('rb') as ff:
                 return ff.read().decode().split('\x00')[0]
         except FileNotFoundError:
             return None
@@ -102,12 +103,12 @@ class Process(AbstractProcess):
         for pid in Process.list_available_pids():
             try:
                 logger.debug(f'Checking name for pid {pid}')
-                with open(f'/proc/{pid}/cmdline', 'rb') as cmdline:
+                with Path(f'/proc/{pid}/cmdline').open('rb') as cmdline:
                     path = cmdline.read().decode().split('\x00')[0]
             except FileNotFoundError:
                 continue
 
-            name = os.path.basename(path)
+            name = Path(path).name
             logger.debug(f'Name was "{name}"')
             if path is not None and name == target_name:
                 return pid
@@ -117,7 +118,7 @@ class Process(AbstractProcess):
 
     def list_mapped_regions(self, writeable_only: bool = True) -> list[tuple[int, int]]:
         regions = []
-        with open(f'/proc/{self.pid}/maps', 'r') as maps:
+        with Path(f'/proc/{self.pid}/maps').open('r') as maps:
             for line in maps:
                 bounds, privileges = line.split()[0:2]
 
