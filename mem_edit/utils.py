@@ -11,16 +11,15 @@ Utility functions and types:
   Check if two buffers (ctypes objects) store equal values:
     ctypes_equal(a, b)
 """
-from typing import Union
 import ctypes
 
 
-ctypes_buffer_t = Union[
-    ctypes._SimpleCData,
-    ctypes.Array,
-    ctypes.Structure,
-    ctypes.Union,
-    ]
+ctypes_buffer_t = (
+    ctypes._SimpleCData
+    | ctypes.Array
+    | ctypes.Structure
+    | ctypes.Union
+    )
 
 
 class MemEditError(Exception):

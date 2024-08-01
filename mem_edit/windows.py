@@ -92,7 +92,7 @@ class MEMORY_BASIC_INFORMATION64(ctypes.Structure):
 
 
 PTR_SIZE = ctypes.sizeof(ctypes.c_void_p)
-MEMORY_BASIC_INFORMATION: ctypes.Structure
+MEMORY_BASIC_INFORMATION: type[ctypes.Structure]
 if PTR_SIZE == 8:       # 64-bit python
     MEMORY_BASIC_INFORMATION = MEMORY_BASIC_INFORMATION64
 elif PTR_SIZE == 4:     # 32-bit python
@@ -256,7 +256,7 @@ class Process(AbstractProcess):
         start = sys_info.lpMinimumApplicationAddress
         stop = sys_info.lpMaximumApplicationAddress
 
-        def get_mem_info(address):
+        def get_mem_info(address: int) -> MEMORY_BASIC_INFORMATION:
             """
             Query the memory region starting at or before 'address' to get its size/type/state/permissions.
             """

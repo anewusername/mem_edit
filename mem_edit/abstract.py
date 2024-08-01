@@ -1,8 +1,8 @@
 """
 Abstract class for cross-platform memory editing.
 """
-
-from typing import Generator
+from typing import Self
+from collections.abc import Generator
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 import copy
@@ -346,7 +346,7 @@ class Process(metaclass=ABCMeta):
 
     @classmethod
     @contextmanager
-    def open_process(cls, process_id: int) -> Generator['Process', None, None]:
+    def open_process(cls: type[Self], process_id: int) -> Generator[Self, None, None]:
         """
         Context manager which automatically closes the constructed Process:
         ```
