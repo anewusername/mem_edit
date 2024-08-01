@@ -161,8 +161,8 @@ class Process(AbstractProcess):
                 ctypes.sizeof(write_buffer),
                 None
                 )
-        except (BufferError, ValueError, TypeError):
-            raise MemEditError(f'Error with handle {self.process_handle}:  {self._get_last_error()}')
+        except (BufferError, ValueError, TypeError) as err:
+            raise MemEditError(f'Error with handle {self.process_handle}:  {self._get_last_error()}') from err
 
     def read_memory(self, base_address: int, read_buffer: ctypes_buffer_t) -> ctypes_buffer_t:
         try:
@@ -173,8 +173,8 @@ class Process(AbstractProcess):
                 ctypes.sizeof(read_buffer),
                 None
                 )
-        except (BufferError, ValueError, TypeError):
-            raise MemEditError(f'Error with handle {self.process_handle}: {self._get_last_error()}')
+        except (BufferError, ValueError, TypeError) as err:
+            raise MemEditError(f'Error with handle {self.process_handle}: {self._get_last_error()}') from err
 
         return read_buffer
 
@@ -274,8 +274,7 @@ class Process(AbstractProcess):
                 if success == 0:
                     raise MemEditError('Failed VirtualQueryEx with handle '
                                        + f'{self.process_handle}: {self._get_last_error()}')
-                else:
-                    raise MemEditError('VirtualQueryEx output too short!')
+                raise MemEditError('VirtualQueryEx output too short!')
 
             return mbi
 
