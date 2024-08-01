@@ -86,7 +86,7 @@ def ctypes_equal(
     """
     Check if the values stored inside two ctypes buffers are equal.
     """
-    if not type(a) == type(b):
+    if not type(a) == type(b):      # noqa: E721
         return False
 
     if isinstance(a, ctypes.Array):
