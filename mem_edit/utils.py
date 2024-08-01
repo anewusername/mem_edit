@@ -96,7 +96,7 @@ def ctypes_equal(
             if isinstance(a, (ctypes.Array, ctypes.Structure, ctypes.Union, ctypes._SimpleCData)):
                 if not ctypes_equal(a_attr, b_attr):
                     return False
-            elif not a_attr == b_attr:
+            elif a_attr != b_attr:
                 return False
 
         return True

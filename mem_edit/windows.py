@@ -192,10 +192,9 @@ class Process(AbstractProcess):
             max_path_len,
             )
 
-        if rval > 0:
-            return name_buffer.value.decode()
-        else:
+        if rval <= 0:
             return None
+        return name_buffer.value.decode()
 
     @staticmethod
     def list_available_pids() -> list[int]:
@@ -218,11 +217,9 @@ class Process(AbstractProcess):
 
             num_returned = floor(returned_size.value / ctypes.sizeof(ctypes.wintypes.DWORD))
 
-            if nn == num_returned:
-                nn *= 2
-                continue
-            else:
+            if nn != num_returned:
                 break
+            nn *= 2
 
         return pids[:num_returned]
 
