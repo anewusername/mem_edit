@@ -23,8 +23,8 @@ version = __version__       # legacy compatibility
 
 system = platform.system()
 if system == 'Windows':
-    from .windows import Process
+    from .windows import Process as Process
 elif system == 'Linux':
-    from .linux import Process
+    from .linux import Process as Process
 else:
     raise MemEditError('Only Linux and Windows are currently supported.')
